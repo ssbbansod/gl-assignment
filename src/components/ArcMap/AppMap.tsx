@@ -1,9 +1,11 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { Map } from 'react-arcgis';
 import styles from './AppMap.module.css'
 import { Coordinates } from "../../@types/coordinate";
 import { default as APoint } from '@arcgis/core/geometry/Point';
+import Search from '@arcgis/core/widgets/Search';
+// import Home from '@arcgis/core/widgets/Home';
 import useFetch from "../../hooks/useFetch";
 import { POLUTION_URL } from "../../consts/MapConstants";
 import { addLocationPointer, calculateCenterCoordinates } from "../../utils/AppMapUtil";
@@ -42,13 +44,31 @@ const AppMap = () => {
 
    }, [data, view])
 
-   const handleMapLoad = (_: any, mapView: any) : any => {
+   const handleMapLoad = (_: any, mapView: any): any => {
       setView(mapView);
-      mapView.on('click', (event:any) => {
+      // Create a new Search widget and add it to the top-right corner of the map view
+      const searchWidget = new Search({
+         view: mapView,
+         container: document.createElement('div'), // Create a separate div for the widget
+      });
+      mapView.ui.add(searchWidget, {
+         position: 'top-right',
+      });
+
+      // const homeWidget = new Home({
+      //    view: mapView,
+      //    container: document.createElement('home'), // Create a separate div for the widget
+      //  });
+      //  // Add the Home widget to the UI
+      //  mapView.ui.add(homeWidget, {
+      //    position: 'top-left',
+      //  });
+
+      mapView.on('click', (event: any) => {
          // console.log("clicked > ")
-         mapView.hitTest(event).then((response:any) => {
+         mapView.hitTest(event).then((response: any) => {
             // console.log("response > ", response.results)
-            const result = response.results.find((r:any) => r?.graphic?.attributes?.geometry !== undefined);
+            const result = response.results.find((r: any) => r?.graphic?.attributes?.geometry !== undefined);
             //   const locationResult = response.results.find((r) => r?.graphic?.attributes?.layerId !== undefined);
             if (result) {
                const attributes = result?.graphic?.attributes;
@@ -72,14 +92,14 @@ const AppMap = () => {
    }
 
    const handleMapTypeChange = (event: any) => {
-      console.log("map-type > ", event?.target.value)
+      // console.log("map-type > ", event?.target.value)
       setBaseMap(event?.target.value);
       if (view) {
          view.map.basemap = event?.target.value;
       }
    }
    const handleZoomChange = (event: any) => {
-      console.log("zoom-level > ", event?.target.value)
+      // console.log("zoom-level > ", event?.target.value)
       setZoom(event?.target.value)
       if (view) {
          view.zoom = event?.target.value;
@@ -90,8 +110,9 @@ const AppMap = () => {
 
 
    return (
-      <>
-         <h3>Polution Data Points of PHILADELPHIA, USA</h3>
+
+      <div className={styles.appContainer}>
+         <div className={styles.appHeader}> <strong>Polution Data Points of PHILADELPHIA, USA </strong></div>
          <label htmlFor="map-tpye" > Map View </label>
          <select id="map-type" name="mapTypes" onChange={handleMapTypeChange}>
             <option value={"gray-vector"}> gray-vector </option>
@@ -115,10 +136,9 @@ const AppMap = () => {
             mapProperties={{ basemap: baseMap }}
             viewProperties={{ center: location, zoom: zoom }}
             onLoad={handleMapLoad} // Called when the map loads
-
          />
+      </div>
 
-      </>
    )
 
 }

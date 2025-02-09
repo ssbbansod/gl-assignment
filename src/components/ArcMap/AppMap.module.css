@@ -1,9 +1,16 @@
 .mapContainer{
-    height: 80vh;
-    width: 90vw;
+    height: 90vh;
+    width: 99vw;
     border: 2px solid #ccc; 
     border-radius: 8px;
 }
 .polutionMetric {
     font-style: italic
+}
+.appContainer{
+    background-color:#ccf2ff;
+}
+
+.appHeader{
+    font-size: 1.1em;
 }
