@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 
 const useFetch = (url:string) => {
-    const [data,setData] = useState<any|null>(null);
+    const [data,setData] = useState<any|null>([-75,80]);
     // const [loading,setLoading] = useState<boolean>(false);
     // const [error,setError] = useState<unknown>("");
 

@@ -5,7 +5,7 @@ import styles from './AppMap.module.css'
 import { Coordinates } from "../../@types/coordinate";
 import { default as APoint } from '@arcgis/core/geometry/Point';
 import Search from '@arcgis/core/widgets/Search';
-// import Home from '@arcgis/core/widgets/Home';
+import Home from '@arcgis/core/widgets/Home';
 import useFetch from "../../hooks/useFetch";
 import { POLUTION_URL } from "../../consts/MapConstants";
 import { addLocationPointer, calculateCenterCoordinates } from "../../utils/AppMapUtil";
@@ -15,8 +15,8 @@ import PolutionDataModel from "../Polution/PolutionDataModel";
 
 const AppMap = () => {
    const [baseMap, setBaseMap] = useState<string>("gray-vector");
-   const [location, setLocation] = useState<Coordinates>([-118.2437, 34.0522]); // (latitude, longitude)
    const [data] = useFetch(POLUTION_URL)
+   const [location, setLocation] = useState<Coordinates>(calculateCenterCoordinates(data.features)); // (latitude, longitude)
    const [selectedData, setSelectedData] = useState<null | object>(null)
    const [modelOpen, setModelOpen] = useState<boolean>(false)
    const [zoom, setZoom] = useState<number>(10);
@@ -35,7 +35,6 @@ const AppMap = () => {
       // console.log("data > ", data)
       if (data) {
          setLocation(calculateCenterCoordinates(data.features));
-
          if (view) {
             // console.log("data effect : ", view)
             addLocationPointer(view, data.features);
@@ -49,21 +48,20 @@ const AppMap = () => {
       // Create a new Search widget and add it to the top-right corner of the map view
       const searchWidget = new Search({
          view: mapView,
-         container: document.createElement('div'), // Create a separate div for the widget
+         container: document.createElement('search'), // Create a separate div for the widget
       });
       mapView.ui.add(searchWidget, {
          position: 'top-right',
       });
 
-      // const homeWidget = new Home({
-      //    view: mapView,
-      //    container: document.createElement('home'), // Create a separate div for the widget
-      //  });
-      //  // Add the Home widget to the UI
-      //  mapView.ui.add(homeWidget, {
-      //    position: 'top-left',
-      //  });
-
+      const homeWidget = new Home({
+         view: mapView,
+      });
+      // Add the Home widget to the UI
+      mapView.ui.add(homeWidget, {
+         position: 'bottom-left',
+      });
+      
       mapView.on('click', (event: any) => {
          // console.log("clicked > ")
          mapView.hitTest(event).then((response: any) => {
