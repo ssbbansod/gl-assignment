@@ -8,8 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { PolutionModelProps } from '../@types/polutionmodel';
-import styles from './AppMap.module.css'
+import { PolutionModelProps } from '../../@types/polutionmodel';
 import './PolutionDataModel.module.css'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -46,29 +45,33 @@ export default function PolutionDataModel({ open, onHandleClose, data }: Polutio
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <Typography variant="h6"  gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Polution Metrics
           </Typography>
-          <table >
-            <tr><th>Metric</th><th>Value</th></tr>
-            {data && Object.entries(data)
-              .filter(([key, value]) => key !== "title")
-              .map(([key, value]) =>
-                <tr>
-                  <td>
-                    <Typography gutterBottom>
-                      {key}
-                    </Typography>
-                  </td>
+          {data &&
+            <table >
+              <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+              <tbody>
+                {data && Object.entries(data)
+                  .filter(([key, _]) => key !== "title")
+                  .map(([key, _],index) =>
+                    <tr key={index}>
+                      <td>
+                        <Typography gutterBottom>
+                          {key}
+                        </Typography>
+                      </td>
 
-                  <td align='center'>
-                    <Typography gutterBottom>
-                      {value ? value : "null"} 
-                    </Typography>
-                  </td>
-                </tr>
-              )}
-          </table>
+                      <td align='center'>
+                        <Typography gutterBottom>
+                          {data[key] ? data[key] : "null"}
+                        </Typography>
+                      </td>
+                    </tr>
+                  )}
+              </tbody>
+            </table>
+          }
 
         </DialogContent>
         <DialogActions>
@@ -77,6 +80,6 @@ export default function PolutionDataModel({ open, onHandleClose, data }: Polutio
           </Button>
         </DialogActions>
       </BootstrapDialog>
-    </React.Fragment>
+    </React.Fragment >
   );
 }

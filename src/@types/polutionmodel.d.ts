@@ -11,9 +11,9 @@ export type Polution = {
 export type PolutionModelProps = {
     open: boolean;
     onHandleClose: () => void;
-    data: Polution | null;
+    data: any ;
 };
 
 export type PolutionTableModelProps = {
-    data: Polution | null;
+    data: any ;
 };

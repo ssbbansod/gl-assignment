@@ -1,20 +1,20 @@
-import  { useState, useEffect, useCallback } from "react";
+import  { useState, useEffect } from "react";
 
 import { Map } from 'react-arcgis';
 import styles from './AppMap.module.css'
-import { Coordinates } from "../@types/coordinate";
+import { Coordinates } from "../../@types/coordinate";
 import { default as APoint } from '@arcgis/core/geometry/Point';
-import useFetch from "../hooks/useFetch";
-import { POLUTION_URL } from "../consts/MapConstants";
-import { addLocationPointer, calculateCenterCoordinates } from "./AppMapUtil";
-import PolutionDataModel from "./PolutionDataModel";
+import useFetch from "../../hooks/useFetch";
+import { POLUTION_URL } from "../../consts/MapConstants";
+import { addLocationPointer, calculateCenterCoordinates } from "../../utils/AppMapUtil";
+import PolutionDataModel from "../Polution/PolutionDataModel";
 
 
 
 const AppMap = () => {
    const [baseMap, setBaseMap] = useState<string>("gray-vector");
    const [location, setLocation] = useState<Coordinates>([-118.2437, 34.0522]); // (latitude, longitude)
-   const [loading, data, error] = useFetch(POLUTION_URL)
+   const [data] = useFetch(POLUTION_URL)
    const [selectedData, setSelectedData] = useState<null | object>(null)
    const [modelOpen, setModelOpen] = useState<boolean>(false)
    const [zoom, setZoom] = useState<number>(10);
@@ -42,16 +42,16 @@ const AppMap = () => {
 
    }, [data, view])
 
-   const handleMapLoad = useCallback((map: __esri.Map, mapView: __esri.MapView) => {
+   const handleMapLoad = (_: any, mapView: any) : any => {
       setView(mapView);
-      mapView.on('click', (event) => {
-         console.log("clicked > ")
-         mapView.hitTest(event).then((response) => {
-            console.log("response > ", response.results)
-            const result = response.results.find((r) => r?.graphic?.attributes?.geometry !== undefined);
+      mapView.on('click', (event:any) => {
+         // console.log("clicked > ")
+         mapView.hitTest(event).then((response:any) => {
+            // console.log("response > ", response.results)
+            const result = response.results.find((r:any) => r?.graphic?.attributes?.geometry !== undefined);
             //   const locationResult = response.results.find((r) => r?.graphic?.attributes?.layerId !== undefined);
             if (result) {
-               const attributes = result.graphic.attributes;
+               const attributes = result?.graphic?.attributes;
                let polutionData = {
                   title: attributes?.properties?.SITE_ADDRESS,
                   CARBON_MONOXIDE_PPM: attributes?.properties?.CARBON_MONOXIDE_PPM,
@@ -69,7 +69,7 @@ const AppMap = () => {
             }
          });
       });
-   }, [])
+   }
 
    const handleMapTypeChange = (event: any) => {
       console.log("map-type > ", event?.target.value)

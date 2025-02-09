@@ -1,5 +1,4 @@
 import { Coordinates } from "../@types/coordinate";
-import { Polution } from "../@types/polutionIntensity";
 import Graphic from '@arcgis/core/Graphic';
 import { default as APoint } from '@arcgis/core/geometry/Point';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
@@ -20,26 +19,6 @@ export function calculateCenterCoordinates(data:any[]) {
     // console.log(`longitude : ${longitude} | latitude : ${latitude}`);
     centerCoordinate = [longitude,latitude]
     return centerCoordinate;
-}
-
-export function getPolutionIntensity(data:any[]){
-    let intensity : any[] = [];
-    data.forEach((featureObj,i)=>{
-        let geometry = featureObj.geometry;
-        let tempCoordinate = geometry.coordinates;
-        let polutionObj = featureObj.properties;
-        let PM25_UG_M3 = polutionObj["PM25_UG_M3"]
-        let OZONE_PPM = polutionObj["OZONE_PPM"]
-        // console.log("coordinates > ",tempCoordinate);
-        // console.log("PM25_UG_M3 > ",PM25_UG_M3);
-        
-        let cityIntensityObj : Polution = {
-            coordinate : tempCoordinate,
-            intensityDelta : !PM25_UG_M3 ? (!OZONE_PPM ? 0 : OZONE_PPM/2.5) : PM25_UG_M3
-        }
-        intensity.push(cityIntensityObj);
-    })
-    return intensity.sort((a,b)=>a-b)
 }
 
 function sortPolutionDataArray(polutionData:any[]){
@@ -81,7 +60,7 @@ export const addLocationPointer = (view: __esri.MapView, dataArray: any[]) => {
        });
 
        const markerSymbol = new SimpleMarkerSymbol({
-          color: "#5bd7d7", // Blue color with slight transparency
+          color: "#5bd7d7", //  color with slight transparency
           size: 15 * (!PM25_UG_M3 ? (!OZONE_PPM ? 0 : OZONE_PPM/8) : PM25_UG_M3 * 0.1),
           style: 'circle',
           outline: {
