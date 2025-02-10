@@ -8,9 +8,8 @@ import Search from '@arcgis/core/widgets/Search';
 import Home from '@arcgis/core/widgets/Home';
 import useFetch from "../../hooks/useFetch";
 import { POLUTION_URL } from "../../consts/MapConstants";
-import { addLocationPointer, calculateCenterCoordinates } from "../../utils/AppMapUtil";
+import { addLocationPointer, calculateCenterCoordinates, getPolutionObject } from "../../utils/AppMapUtil";
 import PolutionDataModel from "../Polution/PolutionDataModel";
-
 
 
 const AppMap = () => {
@@ -29,7 +28,7 @@ const AppMap = () => {
          view.center = new APoint({ longitude: location[0], latitude: location[1] });
          view.zoom = zoom;
       }
-   }, [location, zoom, view, data]); // Update the map when center or zoom changes
+   }, [location, zoom]); // Update the map when center or zoom changes
 
    useEffect(() => {
       // console.log("data > ", data)
@@ -45,6 +44,7 @@ const AppMap = () => {
 
    const handleMapLoad = (_: any, mapView: any): any => {
       setView(mapView);
+      
       // Create a new Search widget and add it to the top-right corner of the map view
       const searchWidget = new Search({
          view: mapView,
@@ -61,30 +61,24 @@ const AppMap = () => {
       mapView.ui.add(homeWidget, {
          position: 'bottom-left',
       });
-      
+
       mapView.on('click', (event: any) => {
          // console.log("clicked > ")
          mapView.hitTest(event).then((response: any) => {
             // console.log("response > ", response.results)
             const result = response.results.find((r: any) => r?.graphic?.attributes?.geometry !== undefined);
-            //   const locationResult = response.results.find((r) => r?.graphic?.attributes?.layerId !== undefined);
+            // const locationResult = response.results.find((r: any) => r?.graphic?.attributes?.layerId !== undefined);
+            // console.log("locationResult > ", locationResult)
             if (result) {
                const attributes = result?.graphic?.attributes;
-               let polutionData = {
-                  title: attributes?.properties?.SITE_ADDRESS,
-                  CARBON_MONOXIDE_PPM: attributes?.properties?.CARBON_MONOXIDE_PPM,
-                  NITROGEN_DIOXIDE_PPM: attributes?.properties?.NITROGEN_DIOXIDE_PPM,
-                  OZONE_PPM: attributes?.properties?.OZONE_PPM,
-                  PM10_UG_M3: attributes?.properties?.PM10_UG_M3,
-                  PM25_UG_M3: attributes?.properties?.PM25_UG_M3,
-                  SULFUR_DIOXIDE_PPB: attributes?.properties?.SULFUR_DIOXIDE_PPB,
-               }
+               let polutionData = getPolutionObject(attributes);
                setSelectedData(polutionData);
                setModelOpen(true)
             } else {
                setSelectedData(null);
                setModelOpen(false)
             }
+
          });
       });
    }
@@ -135,6 +129,7 @@ const AppMap = () => {
             viewProperties={{ center: location, zoom: zoom }}
             onLoad={handleMapLoad} // Called when the map loads
          />
+         <div id="viewDiv"></div>
       </div>
 
    )
