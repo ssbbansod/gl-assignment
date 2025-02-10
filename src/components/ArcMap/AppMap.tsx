@@ -14,7 +14,7 @@ import PolutionDataModel from "../Polution/PolutionDataModel";
 
 const AppMap = () => {
    const [baseMap, setBaseMap] = useState<string>("gray-vector");
-   const [data] = useFetch(POLUTION_URL)
+   const {data} = useFetch(POLUTION_URL)
    const [location, setLocation] = useState<Coordinates>(calculateCenterCoordinates(data.features)); // (latitude, longitude)
    const [selectedData, setSelectedData] = useState<null | object>(null)
    const [modelOpen, setModelOpen] = useState<boolean>(false)
