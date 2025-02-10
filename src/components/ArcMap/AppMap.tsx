@@ -14,7 +14,7 @@ import PolutionDataModel from "../Polution/PolutionDataModel";
 
 const AppMap = () => {
    const [baseMap, setBaseMap] = useState<string>("gray-vector");
-   const {data} = useFetch(POLUTION_URL)
+   const { data } = useFetch(POLUTION_URL)
    const [location, setLocation] = useState<Coordinates>(calculateCenterCoordinates(data.features)); // (latitude, longitude)
    const [selectedData, setSelectedData] = useState<null | object>(null)
    const [modelOpen, setModelOpen] = useState<boolean>(false)
@@ -44,7 +44,7 @@ const AppMap = () => {
 
    const handleMapLoad = (_: any, mapView: any): any => {
       setView(mapView);
-      
+
       // Create a new Search widget and add it to the top-right corner of the map view
       const searchWidget = new Search({
          view: mapView,
@@ -56,6 +56,14 @@ const AppMap = () => {
 
       const homeWidget = new Home({
          view: mapView,
+         goToOverride: function (view:any, goToParams:any) {
+            goToParams.target = {
+               duration: 2000,
+               easing: "ease-in-out"     // Smooth easing effect
+            };
+            goToParams.target = calculateCenterCoordinates(data.features)
+            return view.goTo(goToParams.target, goToParams.options);
+         }
       });
       // Add the Home widget to the UI
       mapView.ui.add(homeWidget, {
